@@ -2,8 +2,6 @@
 /Secret
 /Lib
 /Scripts
+/log
 *.csv
 const.py
-
-
-

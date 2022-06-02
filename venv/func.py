@@ -1,6 +1,8 @@
 from Secret import const
 from python_bitvavo_api.bitvavo import Bitvavo
 import datetime
+import os.path
+from os import path
 
 bitvavo = Bitvavo({
   'APIKEY': const.api_key,
@@ -38,27 +40,28 @@ def moving_avarages(symbol: str, length: int, time_type):
 
 
 def log(stringer: str, name: str):
-  try:
-      open(f'log/{name}.csv')
-  except FileNotFoundError:
-      with open(f'log/{name}.csv', 'w') as g:
-          g.write('Action,' +
-                  'Pair,' +
-                  'Amount,' +
-                  'Error,' +
-                  'DateTime\n')
-          g.close()
-  with open(f'log/{name}.csv', 'a') as f:
-      f.write(stringer + ',' + datetime.datetime.now() + '\n')
-      f.close()
-  return
+    file = f'{name}.csv'
+    text = f'{stringer},{datetime.datetime.now()}\n'
+    if os.path.isfile(file):
+        with open(file, 'a') as f:
+            f.write(text)
+            f.close()
+    else:
+        with open(file, 'w') as g:
+            g.write('Action,Pair,Amount,Error,DateTime\n' + text)
+            g.close()
+
+    return
 
 
 def trade_market_order(symbol: str, action: str, amount):
   pair = str.upper(symbol) + '-EUR'
   try:
     bitvavo.placeOrder(pair, action, 'market', {'amount': amount})
-    return f'{pair},{action},{amount}'
+    log(f'{action},{pair},{amount},none', 'log')
+    log(f'{action},{pair},{amount},none', 'action')
+    return f'{action}, {pair}, {action}, {amount}, {datetime.datetime.now()}'
   except Exception:
-    return Exception
-
+    log(f'{action},{pair},{amount},{Exception}', 'log')
+    log(f'{action},{pair},{amount},{Exception}', 'error')
+    return f'{Exception}, {action}, {pair}, {action}, {amount}, {datetime.datetime.now()}'
