@@ -1,0 +1,9 @@
+# created by virtualenv automatically
+/Secret
+/Lib
+/Scripts
+*.csv
+const.py
+
+
+
